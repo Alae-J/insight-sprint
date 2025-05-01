@@ -58,7 +58,6 @@ docker compose up -d
 This starts:
 - Postgres
 - Ollama
-- Spring Boot app
 
 > 🧠 After containers start, pull the required model inside the Ollama container:
 
