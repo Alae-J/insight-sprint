@@ -49,15 +49,15 @@ git clone https://github.com/Alae-J/insight-sprint.git
 cd insight-sprint
 ```
 
-### 2. Spin up backend stack
+### 2. Start backend services (DB + AI)
 
 ```bash
 docker compose up -d
 ```
 
 This starts:
-- Postgres
-- Ollama
+- 🐘 Postgres (Database)
+- 🤖 Ollama (LLM engine)
 
 > 🧠 After containers start, pull the required model inside the Ollama container:
 
@@ -65,13 +65,34 @@ This starts:
 docker exec -it ollama ollama pull llama3
 ```
 
-### 3. Start the frontend
+> Optionally, you can also pull a lightweight model like `phi3` for tagging features:
 
 ```bash
-cd frontend
+docker exec -it ollama ollama pull phi3
+```
+
+### 3. Start the Spring Boot backend
+
+```bash
+cp backend/.env.example backend/.env
+cd backend
+export $(cat .env | xargs)
+mvn spring-boot:run
+```
+
+> ⚠️ This step loads your `.env` values as environment variables so Spring Boot can access database credentials.
+
+---
+
+### 4. Start the frontend
+
+```bash
+cd ../frontend
 npm install
 npm run dev
 ```
+
+> Make sure `VITE_API_BASE_URL` in `frontend/.env` points to your backend (e.g., `http://localhost:8090/api`).
 
 ---
 
