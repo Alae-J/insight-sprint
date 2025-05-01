@@ -1,1 +1,17 @@
 /home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/OllamaApplication.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/auth/controller/AuthController.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/auth/dto/AuthRequest.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/auth/dto/AuthResponse.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/auth/dto/RegisterRequest.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/auth/entity/User.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/auth/repository/UserRepository.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/auth/security/JwtAuthFilter.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/auth/security/JwtService.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/auth/security/SecurityConfig.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/auth/service/AuthService.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/idea/entity/Idea.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/meeting/entity/Meeting.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/meeting/entity/MeetingSummary.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/monitoring/entity/MessageLog.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/project/entity/Project.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/task/entity/Task.java
