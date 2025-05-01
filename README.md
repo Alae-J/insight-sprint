@@ -64,6 +64,7 @@ This starts:
 
 ```bash
 docker exec -it ollama ollama pull llama3
+```
 
 ### 3. Start the frontend
 
