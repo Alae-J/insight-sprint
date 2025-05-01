@@ -52,7 +52,6 @@ cd insight-sprint
 ### 2. Spin up backend stack
 
 ```bash
-cd backend
 docker compose up -d
 ```
 
