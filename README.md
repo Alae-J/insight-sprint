@@ -61,7 +61,10 @@ This starts:
 - Ollama
 - Spring Boot app
 
-> Ensure Ollama has downloaded models: `llama3` and `phi3`.
+> 🧠 After containers start, pull the required model inside the Ollama container:
+
+```bash
+docker exec -it ollama ollama pull llama3
 
 ### 3. Start the frontend
 
