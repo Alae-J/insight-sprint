@@ -9,7 +9,7 @@ const instance = axios.create({
   },
 });
 
-// Optional response handler
+// response handler
 function handle<T>(promise: Promise<AxiosResponse<T>>): Promise<T> {
   return promise.then(res => res.data).catch(err => {
     throw new Error(err?.response?.data?.message || err.message);
