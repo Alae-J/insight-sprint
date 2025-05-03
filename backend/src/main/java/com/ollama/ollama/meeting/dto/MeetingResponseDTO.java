@@ -11,7 +11,8 @@ public class MeetingResponseDTO {
     private String rawNotesMd;
     private LocalDateTime createdAt;
     private Long projectId;
-    private Long creatorId;
-    private Set<Long> attendeeIds;
+    private MeetingUserDTO creator;
+    private Set<MeetingUserDTO> attendees;
     private MeetingSummaryResponseDTO summary;
 }
+

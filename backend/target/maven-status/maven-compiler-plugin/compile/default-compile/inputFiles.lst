@@ -25,6 +25,7 @@
 /home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/meeting/dto/MeetingResponseDTO.java
 /home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/meeting/dto/MeetingSummaryRequestDTO.java
 /home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/meeting/dto/MeetingSummaryResponseDTO.java
+/home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/meeting/dto/MeetingUserDTO.java
 /home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/meeting/entity/Meeting.java
 /home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/meeting/entity/MeetingSummary.java
 /home/chrome/_Projects/insight-sprint/backend/src/main/java/com/ollama/ollama/meeting/mapper/MeetingMapper.java

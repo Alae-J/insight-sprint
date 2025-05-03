@@ -55,42 +55,33 @@ public class AIService {
             ObjectNode message = objectMapper.createObjectNode();
             message.put("role", "user");
             message.put("content", prompt);
-
+    
             ArrayNode messages = objectMapper.createArrayNode();
             messages.add(message);
-
+    
             ObjectNode payload = objectMapper.createObjectNode();
             payload.put("model", model);
             payload.set("messages", messages);
-            payload.put("stream", true); // Ensure we use streaming
-
-            // Perform streaming POST request and collect all content parts
-            Flux<String> responseFlux = webClient.post()
+            payload.put("stream", false); // Not streaming anymore
+    
+            // Send request and get a single response (not Flux)
+            String response = webClient.post()
                     .uri("/api/chat")
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(payload.toString())
                     .retrieve()
-                    .bodyToFlux(String.class);
-
-            // Concatenate all chunks into a single string
-            StringBuilder result = new StringBuilder();
-            responseFlux
-                    .toStream()
-                    .forEach(chunk -> {
-                        try {
-                            JsonNode node = objectMapper.readTree(chunk);
-                            result.append(node.path("message").path("content").asText());
-                        } catch (Exception e) {
-                            log.error("Failed to parse chunk: {}", chunk, e);
-                        }
-                    });
-
-            return cleanAIResponse(result.toString());
-
+                    .bodyToMono(String.class)
+                    .block();
+    
+            // Parse and extract the assistant message content
+            JsonNode root = objectMapper.readTree(response);
+            return cleanAIResponse(root.path("message").path("content").asText());
+    
         } catch (Exception e) {
             throw new RuntimeException("Failed to communicate with AI", e);
         }
     }
+    
 
     // Remove unnecessary introductory text from the AI's response
     private String cleanAIResponse(String raw) {

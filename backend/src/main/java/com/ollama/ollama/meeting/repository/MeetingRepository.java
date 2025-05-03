@@ -10,5 +10,6 @@ import java.util.List;
 public interface MeetingRepository extends JpaRepository<Meeting, Long> {
     List<Meeting> findByCreator(User creator);
     List<Meeting> findByProject(Project project);
+    List<Meeting> findByProjectId(Long projectId);
     List<Meeting> findByCreatorAndProject(User creator, Project project);
 }

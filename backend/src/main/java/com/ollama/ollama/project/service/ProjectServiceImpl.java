@@ -2,6 +2,8 @@ package com.ollama.ollama.project.service;
 
 import com.ollama.ollama.auth.entity.User;
 import com.ollama.ollama.auth.service.AuthService;
+import com.ollama.ollama.meeting.dto.MeetingResponseDTO;
+import com.ollama.ollama.meeting.service.MeetingService;
 import com.ollama.ollama.project.dto.ProjectRequestDTO;
 import com.ollama.ollama.project.dto.ProjectResponseDTO;
 import com.ollama.ollama.project.entity.Project;
@@ -10,6 +12,8 @@ import com.ollama.ollama.project.repository.ProjectRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +24,8 @@ import java.util.List;
 @Transactional
 public class ProjectServiceImpl implements ProjectService {
 
+    @Autowired
+    private final MeetingService meetingService;
     private final ProjectRepository projectRepository;
     private final AuthService authService;
 
@@ -58,6 +64,12 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectResponseDTO> getAllUserProjects(Long userId) {
         return projectRepository.findByUserId(userId).stream().map(ProjectMapper::toDTO).toList();
+    }
+
+    @Override
+    public List<MeetingResponseDTO> getMeetingsByProjectId(Long projectId, Long userId) {
+        // Optional: you can verify ownership if needed, or trust the JWT + meetingService
+        return meetingService.getMeetingsByProjectId(projectId, userId);
     }
 
     @Override

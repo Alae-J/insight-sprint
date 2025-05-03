@@ -3,7 +3,6 @@ package com.ollama.ollama.meeting.controller;
 import com.ollama.ollama.auth.util.CurrentUser;
 import com.ollama.ollama.meeting.dto.MeetingRequestDTO;
 import com.ollama.ollama.meeting.dto.MeetingResponseDTO;
-import com.ollama.ollama.meeting.dto.MeetingSummaryRequestDTO;
 import com.ollama.ollama.meeting.service.MeetingService;
 
 import lombok.RequiredArgsConstructor;

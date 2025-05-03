@@ -17,7 +17,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Apply to all endpoints
-                        .allowedOriginPatterns("*") // Allow requests from your frontend
+                        .allowedOriginPatterns("http://localhost:8080") // Allow requests from your frontend
                         .allowedMethods("*") // GET, POST, PUT, etc.
                         .allowedHeaders("*") // Allow any headers (e.g., Authorization)
                         .allowCredentials(true); // Allow cookies or Authorization headers
@@ -29,7 +29,7 @@ public class WebConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.addAllowedOrigin("*");
+        configuration.addAllowedOrigin("http://localhost:8080");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
 

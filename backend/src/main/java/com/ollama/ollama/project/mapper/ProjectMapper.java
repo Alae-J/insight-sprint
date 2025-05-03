@@ -20,6 +20,9 @@ public class ProjectMapper {
         dto.setTenantId(project.getTenantId());
         dto.setName(project.getName());
         dto.setDescription(project.getDescription());
+        dto.setCreatedAt(project.getCreatedAt());
+        dto.setUpdatedAt(project.getUpdatedAt());
         return dto;
     }
+    
 }

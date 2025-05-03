@@ -1,16 +1,15 @@
-const TOKEN_KEY = "jwt";
-const USER_ID_KEY = "user_id";
+const TOKEN_KEY = "jwt";  // Key to store JWT token in localStorage
 
-export const saveAuth = (token: string, userId: string) => {
+// Function to save the JWT token in localStorage
+export const saveAuth = (token: string) => {
     localStorage.setItem(TOKEN_KEY, token);
-    localStorage.setItem(USER_ID_KEY, userId);
 };
 
+// Function to retrieve the JWT token from localStorage
 export const getToken = () => localStorage.getItem(TOKEN_KEY);
-export const getUserId = () => localStorage.getItem(USER_ID_KEY);
 
+// Function to remove the JWT token from localStorage and log out
 export const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_ID_KEY);
-    window.location.href = "/login";
+    window.location.href = "/login";  // Redirect to login page
 };

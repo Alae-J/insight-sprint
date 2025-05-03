@@ -5,19 +5,17 @@ import com.ollama.ollama.meeting.entity.MeetingSummary;
 
 public class MeetingSummaryMapper {
 
-    public static MeetingSummaryResponseDTO toDTO(MeetingSummary meetingSummary) {
+    public static MeetingSummaryResponseDTO toDTO(MeetingSummary summary) {
+        if (summary == null) {
+            return null;
+        }
+
         MeetingSummaryResponseDTO dto = new MeetingSummaryResponseDTO();
-        dto.setId(meetingSummary.getId());
-        dto.setSummaryMd(meetingSummary.getSummaryMd());
-    
-        // Set these as strings, no need to convert to JsonNode
-        dto.setActionItemsJson(meetingSummary.getActionItemsJson());
-        dto.setRisksJson(meetingSummary.getRisksJson());
-    
-        dto.setModelName(meetingSummary.getModelName());
-        dto.setCreatedAt(meetingSummary.getCreatedAt());
+        dto.setId(summary.getId());
+        dto.setSummaryMd(summary.getSummaryMd());
+        dto.setActionItemsJson(summary.getActionItemsJson());
+        dto.setRisksJson(summary.getRisksJson());
+
         return dto;
     }
-    
 }
-

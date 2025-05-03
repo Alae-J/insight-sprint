@@ -13,6 +13,7 @@ com/ollama/ollama/meeting/repository/MeetingRepository.class
 com/ollama/ollama/project/dto/ProjectResponseDTO.class
 com/ollama/ollama/task/service/TaskServiceImpl.class
 com/ollama/ollama/project/mapper/ProjectMapper.class
+com/ollama/ollama/meeting/dto/MeetingUserDTO.class
 com/ollama/ollama/meeting/mapper/MeetingSummaryMapper.class
 com/ollama/ollama/project/service/ProjectService.class
 com/ollama/ollama/auth/service/AuthService.class

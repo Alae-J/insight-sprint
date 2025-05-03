@@ -36,46 +36,49 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public MeetingResponseDTO createMeeting(MeetingRequestDTO dto, Long userId) {
-        System.out.println("User ID: " + userId);
         User creator = authService.findById(userId);
         Project project = projectRepository.findById(dto.getProjectId())
                 .orElseThrow(() -> new EntityNotFoundException("Project not found"));
-        System.out.println("Project retrieved: " + project.getName());
+
         if (!project.getUser().getId().equals(userId)) {
             throw new SecurityException("Unauthorized to create meeting in this project");
         }
 
-        System.out.println("Creating meeting for project: " + project.getName());
         Set<User> attendees = dto.getAttendeeIds().stream()
-            .map(authService::findById)
-            .peek(user -> System.out.println("Attendee ID: " + user.getId()))  // Log each attendee
-            .collect(Collectors.toSet());
-        System.out.println("Total attendees: " + attendees.size());
+                .map(authService::findById)
+                .collect(Collectors.toSet());
 
         Meeting meeting = MeetingMapper.toEntity(dto, project, creator, attendees);
         meeting.setCreatedAt(LocalDateTime.now());
-        System.out.println("Created meeting entity with title: " + meeting.getTitle());
 
-        // AI logic placeholder: generate summary via AI service
-        String regeneratedSummary = aiService.generateSummary(meeting.getRawNotesMd());
-        System.out.println("Generated AI summary: " + regeneratedSummary);
-
-        // Create or update the meeting summary
-        MeetingSummary summary = new MeetingSummary();
-        summary.setSummaryMd(regeneratedSummary);
-        summary.setActionItemsJson(aiService.extractActionItems(regeneratedSummary));  // Extract action items (as String)
-        summary.setRisksJson(aiService.extractRisks(regeneratedSummary));  // Extract risks (as String)
-
-        // Save the summary and associate it with the meeting
-        summary.setMeeting(meeting);
-        meeting.setSummary(summary);
-        System.out.println("Saving the meeting along with its summary.");
-
-        // Save the meeting and return the DTO
         Meeting savedMeeting = meetingRepository.save(meeting);
-        System.out.println("Meeting saved with ID: " + savedMeeting.getId());
-        
         return MeetingMapper.toDTO(savedMeeting);
+    }
+
+    @Override
+    public MeetingResponseDTO generateMeetingSummary(Long meetingId, Long userId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new EntityNotFoundException("Meeting not found"));
+
+        if (!meeting.getCreator().getId().equals(userId)) {
+            throw new SecurityException("Unauthorized to generate summary for this meeting");
+        }
+
+        String regeneratedSummary = aiService.generateSummary(meeting.getRawNotesMd());
+
+        MeetingSummary summary = meeting.getSummary();
+        if (summary == null) {
+            summary = new MeetingSummary();
+            summary.setMeeting(meeting);
+        }
+
+        summary.setSummaryMd(regeneratedSummary);
+        summary.setActionItemsJson(aiService.extractActionItems(regeneratedSummary));
+        summary.setRisksJson(aiService.extractRisks(regeneratedSummary));
+
+        meetingSummaryRepository.save(summary);
+
+        return MeetingMapper.toDTO(meeting);
     }
 
     @Override
@@ -100,39 +103,26 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
+    public List<MeetingResponseDTO> getMeetingsByProjectId(Long projectId, Long userId) {
+        return meetingRepository.findByProjectId(projectId).stream()
+                .filter(meeting -> meeting.getCreator().getId().equals(userId))
+                .map(MeetingMapper::toDTO)
+                .toList();
+    }
+
+    @Override
     public MeetingResponseDTO updateMeeting(Long meetingId, MeetingRequestDTO dto, Long userId) {
-        // Fetch the meeting
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new EntityNotFoundException("Meeting not found"));
 
-        // Check if the user is allowed to update this meeting
         if (!meeting.getCreator().getId().equals(userId)) {
             throw new SecurityException("Unauthorized to update this meeting");
         }
 
-        // Update the meeting details
         meeting.setTitle(dto.getTitle());
         meeting.setRawNotesMd(dto.getRawNotesMd());
         meeting.setTags(dto.getTags());
 
-        // Regenerate the summary using AI if the meeting text was updated
-        String regeneratedSummary = aiService.generateSummary(dto.getRawNotesMd());
-
-        // Update or create the meeting summary
-        MeetingSummary summary = meeting.getSummary();
-        if (summary == null) {
-            summary = new MeetingSummary();
-            summary.setMeeting(meeting);
-        }
-
-        summary.setSummaryMd(regeneratedSummary);
-        summary.setActionItemsJson(aiService.extractActionItems(regeneratedSummary));  // Extract action items (as String)
-        summary.setRisksJson(aiService.extractRisks(regeneratedSummary));  // Extract risks (as String)
-
-
-        meetingSummaryRepository.save(summary);  // Save updated summary
-
-        // Return the updated meeting with the new summary
         return MeetingMapper.toDTO(meeting);
     }
 

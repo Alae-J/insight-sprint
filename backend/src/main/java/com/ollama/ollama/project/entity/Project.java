@@ -8,7 +8,11 @@ import com.ollama.ollama.task.entity.Task;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "projects")
@@ -29,6 +33,13 @@ public class Project {
     private String name;
 
     private String description;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     // A project has many meetings
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)

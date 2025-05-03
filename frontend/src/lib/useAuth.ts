@@ -7,15 +7,23 @@ export const useAuth = () => {
 
     useEffect(() => {
         const token = getToken();
-        if (!token) return;
+        if (!token) {
+            setIsAuthenticated(false);
+            return;
+        }
 
         try {
-            const { exp }: any = jwtDecode(token);
-            const isExpired = exp * 1000 < Date.now();
-            if (isExpired) logout();
-            else setIsAuthenticated(true);
+            const { exp }: any = jwtDecode(token);  // Decode JWT token
+            const isExpired = exp * 1000 < Date.now();  // Check if token is expired
+            if (isExpired) {
+                logout();  // Log out if token is expired
+                setIsAuthenticated(false);
+            } else {
+                setIsAuthenticated(true);  // Token is valid and not expired
+            }
         } catch {
-            logout();
+            logout();  // In case of a decode error, log out
+            setIsAuthenticated(false);
         }
     }, []);
 
