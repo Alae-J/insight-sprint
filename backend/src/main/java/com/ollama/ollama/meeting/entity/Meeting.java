@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -55,4 +56,9 @@ public class Meeting {
     @CollectionTable(name = "meeting_tags", joinColumns = @JoinColumn(name = "meeting_id"))
     @Column(name = "tag")
     private Set<String> tags;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

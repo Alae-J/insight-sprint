@@ -1,5 +1,6 @@
 package com.ollama.ollama.meeting.entity;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import org.hibernate.annotations.Type;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -42,4 +43,9 @@ public class MeetingSummary {
     @OneToOne
     @JoinColumn(name = "meeting_id", unique = true, nullable = false)
     private Meeting meeting;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
