@@ -1,11 +1,16 @@
-
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Logo from '../components/Logo';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import { saveAuth } from '@/lib/auth';
+import { api } from '@/service/api/api';
+import { toast } from "@/hooks/use-toast";
 
 const Register = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,10 +22,29 @@ const Register = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Registration attempted with:', formData);
-    // Handle registration logic here
+    setLoading(true);
+    try {
+      const res = await api.post<{ token: string; userId: string }>(
+        "/auth/register",
+        formData
+      );
+      saveAuth(res.token, res.userId);
+      toast({
+        title: "Account created 🎉",
+        description: "You're all set, welcome aboard!",
+      });
+      navigate("/dashboard");
+    } catch (err: any) {
+      console.error("Registration failed:", err.message);
+      toast({
+        title: "Registration failed",
+        description: err.message || "An error occurred while creating your account.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,11 +54,11 @@ const Register = () => {
           <div className="flex justify-center mb-8">
             <Logo />
           </div>
-          
+
           <h1 className="text-2xl font-bold text-center mb-6 text-text-primary dark:text-white">
             Create your account
           </h1>
-          
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
               label="Full Name"
@@ -45,7 +69,7 @@ const Register = () => {
               placeholder="John Smith"
               required
             />
-            
+
             <Input
               label="Email Address"
               type="email"
@@ -55,7 +79,7 @@ const Register = () => {
               placeholder="you@example.com"
               required
             />
-            
+
             <Input
               label="Password"
               type="password"
@@ -65,7 +89,7 @@ const Register = () => {
               placeholder="••••••••"
               required
             />
-            
+
             <div className="flex items-center mt-2 mb-2">
               <input
                 id="terms"
@@ -78,12 +102,12 @@ const Register = () => {
                 I agree to the <a href="#" className="text-primary-blue hover:underline">Terms of Service</a> and <a href="#" className="text-primary-blue hover:underline">Privacy Policy</a>
               </label>
             </div>
-            
-            <Button type="submit" variant="primary" className="w-full">
-              Register
+
+            <Button type="submit" variant="primary" className="w-full" disabled={loading}>
+              {loading ? "Registering..." : "Register"}
             </Button>
           </form>
-          
+
           <div className="mt-6 text-center">
             <p className="text-text-secondary dark:text-gray-300">
               Already have an account?{' '}

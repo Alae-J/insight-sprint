@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import { Toaster } from "@/components/ui/sonner";
 
 const MainLayout = () => {
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -65,6 +66,8 @@ const MainLayout = () => {
             <Outlet />
             </main>
         </div>
+        {/* Toast provider for notifications */}
+        <Toaster position="bottom-right" closeButton richColors />
         </div>
     );
 };

@@ -49,4 +49,10 @@ public class Meeting {
     // One meeting has one summary
     @OneToOne(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
     private MeetingSummary summary;
+
+    // Add a Set<String> for tags
+    @ElementCollection
+    @CollectionTable(name = "meeting_tags", joinColumns = @JoinColumn(name = "meeting_id"))
+    @Column(name = "tag")
+    private Set<String> tags;
 }

@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 import com.ollama.ollama.auth.service.AuthService;
 
@@ -30,18 +31,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors() // or else the browser would block any request before it even reaches your controller
-            .and()
+            .cors(withDefaults()) // or else the browser would block any request before it even reaches your controller
             // Disable CSRF because we're using a stateless REST API (not form submissions)
             .csrf().disable()
             // Define which routes are public and which need authentication
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
                     // Allow unauthenticated access to all /auth/** endpoints (like login/register)
-                    .requestMatchers("/auth/**").permitAll()
-                    .requestMatchers("/h2/**").permitAll()
-                    // All other endpoints require authentication
+                    .requestMatchers("/auth/**", "/h2/**").permitAll()
+                    .requestMatchers("/api/**").hasAuthority("ROLE_USER")
+                    .requestMatchers("/error").permitAll()
                     .anyRequest().authenticated()
+                    
             )
             // Make the app stateless: no sessions, no cookies, every request must be authenticated
             .sessionManagement(sessionManagement ->
@@ -52,6 +53,9 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         // Needed to allow H2 console to be displayed properly (it's in an iframe)
         http.headers(headers -> headers.frameOptions().disable());
+
+        System.out.println("⚙️  Security config applied: JWT filter registered");
+
 
         return http.build();
     }

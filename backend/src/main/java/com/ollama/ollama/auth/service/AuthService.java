@@ -43,6 +43,16 @@ public class AuthService implements UserDetailsService {
                 .build();
     }
 
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+    
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }    
+
     public void register(User user) {
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);

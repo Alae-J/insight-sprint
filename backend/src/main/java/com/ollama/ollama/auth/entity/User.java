@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ollama.ollama.idea.entity.Idea;
 import com.ollama.ollama.meeting.entity.Meeting;
 import com.ollama.ollama.monitoring.entity.MessageLog;
+import com.ollama.ollama.project.entity.Project;
+import com.ollama.ollama.task.entity.Task;
 
 @Entity
 @Table(name = "users")
@@ -38,10 +40,19 @@ public class User {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Task> tasks;
+
     // One user can create many ideas
     @OneToMany(mappedBy = "author")
     @JsonIgnore
     private List<Idea> ideas;
+
+    // One user can have many projects
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Project> projects;
 
     // One user can own many logs
     @OneToMany(mappedBy = "owner")

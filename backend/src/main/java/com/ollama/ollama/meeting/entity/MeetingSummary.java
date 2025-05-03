@@ -1,6 +1,9 @@
 package com.ollama.ollama.meeting.entity;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.Type;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,10 +30,10 @@ public class MeetingSummary {
 
     private String summaryMd;
 
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "text") // Define as text for storage in the DB
     private String actionItemsJson;
 
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "text") // Define as text for storage in the DB
     private String risksJson;
 
     private String modelName;

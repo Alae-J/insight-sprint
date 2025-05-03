@@ -4,6 +4,8 @@ import { Card } from '../components/Card';
 import Button from '../components/Button';
 import Badge from '../components/Badge';
 import { ChevronDown, Calendar, PlusSquare } from 'lucide-react';
+import { TaskModal, TaskFormData } from '../components/TaskModal';
+import { toast } from "sonner";
 
 // Sample data for tasks
 const tasksData = [
@@ -57,6 +59,7 @@ const Tasks = () => {
   const [statusFilter, setStatusFilter] = useState('All');
   const [dateFilter, setDateFilter] = useState('');
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   
   const handleStatusChange = (status: string) => {
     setStatusFilter(status);
@@ -103,11 +106,32 @@ const Tasks = () => {
     }
   };
 
+  const handleCreateTask = (taskData: TaskFormData) => {
+    const newTask = {
+      id: tasks.length + 1,
+      title: taskData.title,
+      project: taskData.project ? projects.find(p => p.id === taskData.project)?.name || 'Uncategorized' : 'Uncategorized',
+      dueDate: taskData.dueDate ? taskData.dueDate.toISOString().split('T')[0] : '',
+      status: 'Not Started',
+      isAiGenerated: taskData.isAiGenerated,
+    };
+    
+    const updatedTasks = [newTask, ...tasks];
+    setTasks(updatedTasks);
+  };
+
+  // Sample project data - in a real app, this would come from an API
+  const projects = [
+    { id: "1", name: "Website Redesign" },
+    { id: "2", name: "API Integration" },
+    { id: "3", name: "Mobile App" },
+  ];
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-text-primary dark:text-white">Tasks</h1>
-        <Button variant="primary">
+        <Button variant="primary" onClick={() => setIsTaskModalOpen(true)}>
           <PlusSquare size={18} className="mr-2" /> New Task
         </Button>
       </div>
@@ -227,6 +251,14 @@ const Tasks = () => {
           </div>
         )}
       </Card>
+
+      {/* Task Modal */}
+      <TaskModal 
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
+        onSubmit={handleCreateTask}
+      />
+
     </div>
   );
 };

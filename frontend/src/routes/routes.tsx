@@ -16,16 +16,16 @@ import KnowledgeSearch from "./../pages/KnowledgeSearch";
 import Profile from "./../pages/Profile";
 import AdminUsers from "./../pages/AdminUsers";
 import MainLayout from "./../components/Layout/MainLayout";
+import { ProtectedRoute } from "./ProtectedRoute";
 
 const AppRoutes = () => {
     return (
         <BrowserRouter>
             <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             
-            <Route path="/" element={<MainLayout />}>
+            <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/projects" element={<Projects />} />
                 <Route path="/projects/:id/meetings" element={<MeetingsList />} />

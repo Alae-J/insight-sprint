@@ -38,9 +38,7 @@ public class AuthController {
     // Handles user registration and returns a JWT token
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        // Encode password before saving
         String hashed = passwordEncoder.encode(request.getPassword());
-        // Build new user
         User user = User.builder()
                 .email(request.getEmail())
                 .password(hashed)
@@ -48,7 +46,6 @@ public class AuthController {
                 .build();
         authService.register(user);
 
-        // Authenticate immediately after registration
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -56,8 +53,13 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String jwt = jwtService.generateToken(userDetails.getUsername());
 
-        return ResponseEntity.ok(new AuthResponse(jwt));
+        // Fetch saved user with ID (if authService.register doesn't return it)
+        User savedUser = authService.findByEmail(request.getEmail());
+
+        return ResponseEntity.ok(new AuthResponse(jwt, savedUser.getId()));
     }
+
+
 
     // Handles login and returns a JWT token
     @PostMapping("/login")
@@ -69,6 +71,9 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String jwt = jwtService.generateToken(userDetails.getUsername());
 
-        return ResponseEntity.ok(new AuthResponse(jwt));
+        // fetch the actual User entity to get the ID
+        User user = authService.findByEmail(request.getEmail());
+
+        return ResponseEntity.ok(new AuthResponse(jwt, user.getId()));
     }
 }

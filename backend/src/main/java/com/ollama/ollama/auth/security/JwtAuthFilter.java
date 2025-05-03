@@ -11,8 +11,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-    import com.ollama.ollama.auth.security.JwtService;
-    import com.ollama.ollama.auth.service.AuthService;
+import com.ollama.ollama.auth.service.AuthService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -36,39 +35,56 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        // Allow unauthenticated access to /auth routes
+        String path = request.getServletPath();
+        if (path.startsWith("/auth")) {
+            filterChain.doFilter(request, response); // let it through
+            return;
+        }
+
         // Step 1: Get the Authorization header from the request
         String authorizationHeader = request.getHeader("Authorization");
-        // Variables to hold extracted token and username
         String username = null;
         String jwt = null;
 
         // Step 2: Check if header exists and starts with "Bearer "
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            // Remove the "Bearer " prefix and keep only the token
-            jwt = authorizationHeader.substring(7);
-            // Use the JWT service to extract the username (email) from the token
-            username = jwtService.getUsernameFromToken(jwt);
-        }
+            jwt = authorizationHeader.substring(7); // Remove "Bearer " prefix
 
-        // Step 3: If username was successfully extracted and no one is authenticated yet for this request
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Load user details from DB using the extracted username
-            UserDetails userDetails = userAuthService.loadUserByUsername(username);
-            // Step 4: Validate the token (is it not expired? was it tampered with?)
+            // Step 3: Only extract username if the token is valid
             if (jwtService.isTokenValid(jwt)) {
-                // Step 5: Create an Authentication object that Spring Security can understand
-                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails, // principal (user info)
-                    null, // credentials (null because we're not checking password here)
-                    userDetails.getAuthorities() // roles/permissions
-                );
-                // Step 6: Add extra request-specific details like IP address, session ID, etc.
-                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                // Step 7: Mark this user as authenticated for this request
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                username = jwtService.getUsernameFromToken(jwt); // extract email
             }
         }
-        // Step 8: Continue the request and pass control to the next filter (or controller)
+
+        // Step 4: If username is valid and no one is authenticated yet for this request
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            // Step 5: Load user details from DB using the username (email)
+            UserDetails userDetails = userAuthService.loadUserByUsername(username);
+
+            // Step 6: Create an Authentication object Spring Security can understand
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                userDetails, // principal (user info)
+                null,        // credentials (we don’t need password here)
+                userDetails.getAuthorities() // roles/permissions
+            );
+
+            // Step 7: Add request-specific info (IP address, etc.)
+            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            // Step 8: Mark the user as authenticated for this request
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            System.out.println("🔐 Authenticated user: " + userDetails.getUsername());
+            System.out.println("🔐 Roles: " + userDetails.getAuthorities());
+
+
+            System.out.println("✅ Extracted username from JWT: " + username);
+            System.out.println("✅ Token is valid: " + jwtService.isTokenValid(jwt));
+        }
+
+        System.out.println("🔒 JWT filter triggered for path: " + request.getRequestURI());
+
+        // Step 9: Continue with the next filter/controller
         filterChain.doFilter(request, response);
     }
 }

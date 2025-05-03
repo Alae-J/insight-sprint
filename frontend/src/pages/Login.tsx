@@ -4,8 +4,17 @@ import { Link } from 'react-router-dom';
 import Logo from '../components/Logo';
 import Input from '../components/Input';
 import Button from '../components/Button';
+import { api } from "../service/api/api";
+import { saveAuth } from "@/lib/auth"; // assuming you've added the helper
+import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
 
 const Login = () => {
+
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -16,11 +25,32 @@ const Login = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempted with:', formData);
-    // Handle login logic here
+    setLoading(true);
+    try {
+      const res = await api.post<{ token: string; userId: string }>(
+        "/auth/login",
+        formData
+      );
+      saveAuth(res.token, res.userId);
+      toast({
+        title: "Login successful 🎉",
+        description: "Welcome back!",
+      });
+      navigate("/dashboard");
+    } catch (err: any) {
+      console.error("Login failed:", err.message);
+      toast({
+        title: "Login failed",
+        description: err.message || "Invalid email or password.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
+  
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">

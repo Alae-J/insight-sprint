@@ -42,4 +42,9 @@ public class Idea {
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+    }
 }
